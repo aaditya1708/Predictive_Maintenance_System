@@ -1,6 +1,7 @@
+
 import streamlit as st
 import pandas as pd
-import pickle
+import joblib
 
 # ─────────────────────────────────────────
 # PAGE CONFIG
@@ -297,10 +298,8 @@ hr {
 
 @st.cache_resource
 def load_artifacts():
-    with open("model.pkl", "rb") as f:
-        model = pickle.load(f)
-    with open("pipeline.pkl", "rb") as f:
-        pipeline = pickle.load(f)
+    model = joblib.load("model.pkl")
+    pipeline = joblib.load("pipeline.pkl")
     return model, pipeline
 
 model, pipeline = load_artifacts()
