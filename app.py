@@ -1,11 +1,6 @@
-
 import streamlit as st
 import pandas as pd
 import joblib
-
-# ─────────────────────────────────────────
-# PAGE CONFIG
-# ─────────────────────────────────────────
 
 st.set_page_config(
     page_title="Predictive Maintenance",
@@ -13,24 +8,19 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
-
-# ─────────────────────────────────────────
-# GLOBAL CSS — Industrial HMI theme
-# ─────────────────────────────────────────
-
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* ── Root & background ── */
 html, body, [data-testid="stAppViewContainer"] {
-    background-color: #0A1520 !important;
-    color: #C8D8E8 !important;
+    background-color: #F7F5F0 !important;
+    color: #374151 !important;
     font-family: 'Inter', sans-serif;
 }
 
 [data-testid="stAppViewContainer"] > .main {
-    background-color: #0A1520 !important;
+    background-color: #F7F5F0 !important;
 }
 
 [data-testid="stHeader"] {
@@ -42,8 +32,8 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ── Custom header strip ── */
 .hmi-header {
-    background: linear-gradient(135deg, #0F1E2E 0%, #152840 100%);
-    border: 1px solid #1E3A55;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FBF9F4 100%);
+    border: 1px solid #E0DDD2;
     border-radius: 12px;
     padding: 24px 32px;
     margin-bottom: 28px;
@@ -52,6 +42,7 @@ html, body, [data-testid="stAppViewContainer"] {
     gap: 20px;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 10px rgba(31, 41, 55, 0.05);
 }
 
 .hmi-header::before {
@@ -59,7 +50,7 @@ html, body, [data-testid="stAppViewContainer"] {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #00D4FF, #0066FF, #00D4FF);
+    background: linear-gradient(90deg, #0369A1, #0EA5E9, #0369A1);
 }
 
 .hmi-header .icon {
@@ -71,14 +62,14 @@ html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Inter', sans-serif;
     font-size: 1.65rem;
     font-weight: 700;
-    color: #E8F4FF;
+    color: #1F2937;
     margin: 0;
     letter-spacing: -0.02em;
 }
 
 .hmi-header p {
     font-size: 0.82rem;
-    color: #6B8FAF;
+    color: #6B7280;
     margin: 4px 0 0 0;
     font-family: 'Roboto Mono', monospace;
     letter-spacing: 0.03em;
@@ -91,9 +82,9 @@ html, body, [data-testid="stAppViewContainer"] {
     gap: 8px;
     font-family: 'Roboto Mono', monospace;
     font-size: 0.72rem;
-    color: #00C96B;
-    background: rgba(0, 201, 107, 0.1);
-    border: 1px solid rgba(0, 201, 107, 0.25);
+    color: #047857;
+    background: rgba(4, 120, 87, 0.1);
+    border: 1px solid rgba(4, 120, 87, 0.25);
     border-radius: 20px;
     padding: 6px 14px;
 }
@@ -101,7 +92,7 @@ html, body, [data-testid="stAppViewContainer"] {
 .hmi-status::before {
     content: '';
     width: 7px; height: 7px;
-    background: #00C96B;
+    background: #047857;
     border-radius: 50%;
     display: inline-block;
     animation: pulse 2s infinite;
@@ -117,7 +108,7 @@ html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Roboto Mono', monospace;
     font-size: 0.68rem;
     font-weight: 600;
-    color: #00D4FF;
+    color: #0369A1;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin: 0 0 12px 0;
@@ -130,16 +121,17 @@ html, body, [data-testid="stAppViewContainer"] {
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, #1E3A55, transparent);
+    background: linear-gradient(90deg, #E0DDD2, transparent);
 }
 
 /* ── Panel card ── */
 .panel-card {
-    background: #0F1E2E;
-    border: 1px solid #1E3A55;
+    background: #FFFFFF;
+    border: 1px solid #E0DDD2;
     border-radius: 10px;
     padding: 20px 22px;
     margin-bottom: 16px;
+    box-shadow: 0 1px 6px rgba(31, 41, 55, 0.04);
 }
 
 /* ── Streamlit number inputs & selects ── */
@@ -148,17 +140,17 @@ html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Roboto Mono', monospace !important;
     font-size: 0.72rem !important;
     font-weight: 500 !important;
-    color: #6B8FAF !important;
+    color: #6B7280 !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
 }
 
 [data-testid="stNumberInput"] input,
 [data-testid="stSelectbox"] > div > div {
-    background-color: #0A1520 !important;
-    border: 1px solid #1E3A55 !important;
+    background-color: #F7F5F0 !important;
+    border: 1px solid #E0DDD2 !important;
     border-radius: 8px !important;
-    color: #E8F4FF !important;
+    color: #1F2937 !important;
     font-family: 'Roboto Mono', monospace !important;
     font-size: 1rem !important;
     font-weight: 500 !important;
@@ -166,14 +158,14 @@ html, body, [data-testid="stAppViewContainer"] {
 
 [data-testid="stNumberInput"] input:focus,
 [data-testid="stSelectbox"] > div > div:focus-within {
-    border-color: #00D4FF !important;
-    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.15) !important;
+    border-color: #0369A1 !important;
+    box-shadow: 0 0 0 2px rgba(3, 105, 161, 0.15) !important;
 }
 
 /* ── Predict button ── */
 .stButton > button {
-    background: linear-gradient(135deg, #005FA3, #007ACC) !important;
-    color: #E8F4FF !important;
+    background: linear-gradient(135deg, #0369A1, #0EA5E9) !important;
+    color: #FFFFFF !important;
     border: none !important;
     border-radius: 10px !important;
     font-family: 'Inter', sans-serif !important;
@@ -188,8 +180,8 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 .stButton > button:hover {
-    background: linear-gradient(135deg, #0070BF, #009AE6) !important;
-    box-shadow: 0 4px 20px rgba(0, 180, 255, 0.3) !important;
+    background: linear-gradient(135deg, #0284C7, #38BDF8) !important;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3) !important;
     transform: translateY(-1px) !important;
 }
 
@@ -199,40 +191,41 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ── Gauge container ── */
 .gauge-wrap {
-    background: #0F1E2E;
-    border: 1px solid #1E3A55;
+    background: #FFFFFF;
+    border: 1px solid #E0DDD2;
     border-radius: 12px;
     padding: 28px 24px 20px;
     text-align: center;
     margin-top: 4px;
+    box-shadow: 0 1px 8px rgba(31, 41, 55, 0.05);
 }
 
 /* ── Result cards ── */
 .result-safe {
-    background: rgba(0, 201, 107, 0.08);
-    border: 1px solid rgba(0, 201, 107, 0.35);
+    background: rgba(4, 120, 87, 0.08);
+    border: 1px solid rgba(4, 120, 87, 0.35);
     border-radius: 10px;
     padding: 18px 22px;
     margin-top: 16px;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #00C96B;
+    color: #047857;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .result-danger {
-    background: rgba(255, 80, 60, 0.08);
-    border: 1px solid rgba(255, 80, 60, 0.35);
+    background: rgba(185, 28, 28, 0.08);
+    border: 1px solid rgba(185, 28, 28, 0.35);
     border-radius: 10px;
     padding: 18px 22px;
     margin-top: 16px;
     font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #FF5A3C;
+    color: #B91C1C;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -241,7 +234,7 @@ html, body, [data-testid="stAppViewContainer"] {
 .result-label {
     font-family: 'Roboto Mono', monospace;
     font-size: 0.68rem;
-    color: #6B8FAF;
+    color: #6B7280;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: 4px;
@@ -256,8 +249,8 @@ html, body, [data-testid="stAppViewContainer"] {
 
 .stat-box {
     flex: 1;
-    background: #0A1520;
-    border: 1px solid #1E3A55;
+    background: #F7F5F0;
+    border: 1px solid #E0DDD2;
     border-radius: 8px;
     padding: 12px 16px;
     text-align: center;
@@ -267,14 +260,14 @@ html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Roboto Mono', monospace;
     font-size: 1.45rem;
     font-weight: 600;
-    color: #E8F4FF;
+    color: #1F2937;
     line-height: 1;
 }
 
 .stat-box .lbl {
     font-family: 'Roboto Mono', monospace;
     font-size: 0.65rem;
-    color: #6B8FAF;
+    color: #6B7280;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin-top: 5px;
@@ -282,7 +275,7 @@ html, body, [data-testid="stAppViewContainer"] {
 
 /* ── Divider override ── */
 hr {
-    border-color: #1E3A55 !important;
+    border-color: #E0DDD2 !important;
     margin: 24px 0 !important;
 }
 
@@ -292,9 +285,6 @@ hr {
 """, unsafe_allow_html=True)
 
 
-# ─────────────────────────────────────────
-# LOAD MODEL & PIPELINE
-# ─────────────────────────────────────────
 
 @st.cache_resource
 def load_artifacts():
@@ -304,10 +294,6 @@ def load_artifacts():
 
 model, pipeline = load_artifacts()
 
-
-# ─────────────────────────────────────────
-# HEADER
-# ─────────────────────────────────────────
 
 st.markdown("""
 <div class="hmi-header">
@@ -320,10 +306,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
-# ─────────────────────────────────────────
-# INPUT PANELS
-# ─────────────────────────────────────────
 
 col_left, col_right = st.columns([1, 1], gap="medium")
 
@@ -344,17 +326,9 @@ with col_right:
         maintenance_count_30d = st.number_input("Maintenance Events (30 Days)", min_value=0, value=0, step=1)
 
 
-# ─────────────────────────────────────────
-# PREDICT BUTTON
-# ─────────────────────────────────────────
-
 st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 predict_clicked = st.button("▶  Run Failure Analysis", use_container_width=True)
 
-
-# ─────────────────────────────────────────
-# PREDICTION & OUTPUT
-# ─────────────────────────────────────────
 
 if predict_clicked:
 
@@ -376,17 +350,16 @@ if predict_clicked:
 
     # Colour stops: green → amber → red
     if pct < 40:
-        gauge_color = "#00C96B"
+        gauge_color = "#047857"
         arc_class = "safe"
     elif pct < 70:
-        gauge_color = "#FF8C00"
+        gauge_color = "#C2410C"
         arc_class = "warn"
     else:
-        gauge_color = "#FF4040"
+        gauge_color = "#B91C1C"
         arc_class = "danger"
 
-    # Arc: 180° sweep maps 0–100% → stroke-dashoffset
-    # Circumference of r=80 semicircle ≈ 251.3
+
     CIRC = 251.3
     filled = CIRC * (pct / 100)
     empty  = CIRC - filled
@@ -401,7 +374,7 @@ if predict_clicked:
             <svg viewBox="0 0 200 110" width="100%" style="overflow:visible">
               <!-- Track arc -->
               <path d="M 20 100 A 80 80 0 0 1 180 100"
-                    fill="none" stroke="#1E3A55" stroke-width="14"
+                    fill="none" stroke="#E0DDD2" stroke-width="14"
                     stroke-linecap="round"/>
               <!-- Value arc -->
               <path d="M 20 100 A 80 80 0 0 1 180 100"
@@ -416,11 +389,11 @@ if predict_clicked:
                     fill="{gauge_color}">{pct:.1f}%</text>
               <text x="100" y="108" text-anchor="middle"
                     font-family="Roboto Mono, monospace"
-                    font-size="8.5" fill="#6B8FAF" letter-spacing="1">FAILURE PROBABILITY</text>
+                    font-size="8.5" fill="#6B7280" letter-spacing="1">FAILURE PROBABILITY</text>
               <!-- Tick labels -->
-              <text x="14" y="113" font-family="Roboto Mono, monospace" font-size="7.5" fill="#3A5570">0</text>
-              <text x="95" y="20" font-family="Roboto Mono, monospace" font-size="7.5" fill="#3A5570">50</text>
-              <text x="178" y="113" font-family="Roboto Mono, monospace" font-size="7.5" fill="#3A5570">100</text>
+              <text x="14" y="113" font-family="Roboto Mono, monospace" font-size="7.5" fill="#9CA3AF">0</text>
+              <text x="95" y="20" font-family="Roboto Mono, monospace" font-size="7.5" fill="#9CA3AF">50</text>
+              <text x="178" y="113" font-family="Roboto Mono, monospace" font-size="7.5" fill="#9CA3AF">100</text>
             </svg>
         </div>
         """, unsafe_allow_html=True)
@@ -447,10 +420,10 @@ if predict_clicked:
                 </div>
             </div>""", unsafe_allow_html=True)
 
-        # Mini stats row
+        
         safe_pct = 100 - pct
         risk_level = "CRITICAL" if pct >= 70 else ("MODERATE" if pct >= 40 else "NOMINAL")
-        risk_color = "#FF4040" if pct >= 70 else ("#FF8C00" if pct >= 40 else "#00C96B")
+        risk_color = "#B91C1C" if pct >= 70 else ("#C2410C" if pct >= 40 else "#047857")
 
         st.markdown(f"""
         <div class="stat-row">
@@ -459,7 +432,7 @@ if predict_clicked:
                 <div class="lbl">Failure Risk</div>
             </div>
             <div class="stat-box">
-                <div class="val" style="color:#00C96B">{safe_pct:.1f}%</div>
+                <div class="val" style="color:#047857">{safe_pct:.1f}%</div>
                 <div class="lbl">Reliability</div>
             </div>
             <div class="stat-box">
@@ -474,15 +447,15 @@ if predict_clicked:
         st.markdown('<p class="section-label">Input Telemetry</p>', unsafe_allow_html=True)
         st.markdown(f"""
         <div style="font-family:'Roboto Mono',monospace; font-size:0.72rem;
-                    color:#4A7090; line-height:2; background:#0A1520;
-                    border:1px solid #1E3A55; border-radius:8px; padding:12px 16px;">
-            VOLT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{volt:.1f} V</span><br>
-            ROTATE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{rotate:.1f} RPM</span><br>
-            PRESSURE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{pressure:.1f} PSI</span><br>
-            VIBRATION&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{vibration:.2f} mm/s</span><br>
-            MODEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{model_type.upper()}</span><br>
-            AGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{age} yr</span><br>
-            ERRORS/24H&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{error_count_24h}</span><br>
-            MAINT/30D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#C8D8E8">{maintenance_count_30d}</span>
+                    color:#6B7280; line-height:2; background:#F7F5F0;
+                    border:1px solid #E0DDD2; border-radius:8px; padding:12px 16px;">
+            VOLT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{volt:.1f} V</span><br>
+            ROTATE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{rotate:.1f} RPM</span><br>
+            PRESSURE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{pressure:.1f} PSI</span><br>
+            VIBRATION&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{vibration:.2f} mm/s</span><br>
+            MODEL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{model_type.upper()}</span><br>
+            AGE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{age} yr</span><br>
+            ERRORS/24H&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{error_count_24h}</span><br>
+            MAINT/30D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{maintenance_count_30d}</span>
         </div>
         """, unsafe_allow_html=True)
