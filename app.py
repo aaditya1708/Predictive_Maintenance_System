@@ -10,277 +10,130 @@ st.set_page_config(
 )
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 
-/* ── Root & background ── */
-html, body, [data-testid="stAppViewContainer"] {
-    background-color: #F7F5F0 !important;
-    color: #374151 !important;
-    font-family: 'Inter', sans-serif;
+:root {
+  --bg: #f3f6fb; --card: #fff; --ink: #14213a; --muted: #65758b;
+  --line: #e2e9f2; --blue: #2563eb; --cyan: #0891b2;
+  --green: #059669; --amber: #d97706; --red: #dc2626;
 }
-
-[data-testid="stAppViewContainer"] > .main {
-    background-color: #F7F5F0 !important;
+html, body, [data-testid="stAppViewContainer"], [data-testid="stMain"] {
+  background: var(--bg) !important; color: var(--ink) !important;
+  font-family: 'Manrope', sans-serif !important;
 }
+[data-testid="stAppViewContainer"] > .main { background: var(--bg) !important; }
+[data-testid="stHeader"] { background: transparent !important; }
+#MainMenu, footer, [data-testid="stToolbar"] { visibility: hidden; }
+.block-container { max-width: 1440px !important; padding: 1.6rem 2.8rem 3rem !important; }
+[data-testid="column"] { padding: 0 .55rem !important; }
+[data-testid="stVerticalBlock"] { gap: .75rem; }
 
-[data-testid="stHeader"] {
-    background: transparent !important;
-}
-
-/* Hide default streamlit chrome */
-#MainMenu, footer, [data-testid="stToolbar"] { display: none !important; }
-
-/* ── Custom header strip ── */
+/* Application top bar */
 .hmi-header {
-    background: linear-gradient(135deg, #FFFFFF 0%, #FBF9F4 100%);
-    border: 1px solid #E0DDD2;
-    border-radius: 12px;
-    padding: 24px 32px;
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(31, 41, 55, 0.05);
+  position: relative; overflow: hidden; display: flex; align-items: center; gap: 1.1rem;
+  padding: 1.55rem 1.8rem; margin-bottom: 1.35rem; border-radius: 20px;
+  border: 1px solid #233d60;
+  background: linear-gradient(112deg, #0b1426 0%, #142a49 58%, #075985 100%);
+  box-shadow: 0 16px 38px rgba(15, 32, 58, .16);
 }
-
-.hmi-header::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #0369A1, #0EA5E9, #0369A1);
+.hmi-header::after {
+  content: ''; position: absolute; width: 300px; height: 300px; right: -70px; top: -180px;
+  border: 1px solid rgba(255,255,255,.14); border-radius: 50%;
+  box-shadow: 0 0 0 30px rgba(255,255,255,.035), 0 0 0 60px rgba(255,255,255,.025);
 }
-
 .hmi-header .icon {
-    font-size: 2.8rem;
-    line-height: 1;
+  z-index: 1; width: 62px; height: 62px; flex: 0 0 62px; display: grid; place-items: center;
+  border-radius: 17px; background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.17); font-size: 1.9rem;
 }
-
 .hmi-header h1 {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.65rem;
-    font-weight: 700;
-    color: #1F2937;
-    margin: 0;
-    letter-spacing: -0.02em;
+  color: #fff; font-size: clamp(1.3rem, 2.1vw, 1.85rem); line-height: 1.25;
+  font-weight: 800; letter-spacing: -.045em; margin: 0;
 }
-
-.hmi-header p {
-    font-size: 0.82rem;
-    color: #6B7280;
-    margin: 4px 0 0 0;
-    font-family: 'Roboto Mono', monospace;
-    letter-spacing: 0.03em;
-}
-
+.hmi-header p { color: #b8cbe2; margin: .5rem 0 0; font: 500 .67rem 'DM Mono', monospace; letter-spacing: .1em; }
 .hmi-status {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.72rem;
-    color: #047857;
-    background: rgba(4, 120, 87, 0.1);
-    border: 1px solid rgba(4, 120, 87, 0.25);
-    border-radius: 20px;
-    padding: 6px 14px;
+  z-index: 1; margin-left: auto; display: flex; align-items: center; gap: .55rem;
+  white-space: nowrap; padding: .6rem .85rem; border-radius: 999px;
+  border: 1px solid rgba(110,231,183,.27); background: rgba(16,185,129,.12);
+  color: #a7f3d0; font: 500 .66rem 'DM Mono', monospace; letter-spacing: .07em;
 }
+.hmi-status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 4px rgba(52,211,153,.13); }
 
-.hmi-status::before {
-    content: '';
-    width: 7px; height: 7px;
-    background: #047857;
-    border-radius: 50%;
-    display: inline-block;
-    animation: pulse 2s infinite;
+/* Dashboard context / cards */
+.dashboard-intro { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin: .15rem .2rem 1.2rem; }
+.dashboard-intro h2 { margin:0; color:#172844; font-size:1.18rem; font-weight:800; letter-spacing:-.035em; }
+.dashboard-intro p { margin:.35rem 0 0; color:#718096; font-size:.82rem; }
+.live-chip { padding:.45rem .7rem; border:1px solid #d7e5f4; background:#fff; color:#4d6685; border-radius:9px; font:500 .64rem 'DM Mono',monospace; white-space:nowrap; }
+.kpi-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.8rem; margin:0 0 1.5rem; }
+.kpi-card { background:#fff; border:1px solid var(--line); border-radius:15px; padding:1rem 1.1rem; box-shadow:0 4px 15px rgba(15,23,42,.025); }
+.kpi-top { display:flex; align-items:center; justify-content:space-between; gap:.5rem; color:#6b7a90; font:500 .65rem 'DM Mono',monospace; letter-spacing:.055em; text-transform:uppercase; }
+.kpi-icon { display:grid; place-items:center; width:30px; height:30px; border-radius:9px; background:#eff6ff; color:#2563eb; font-size:1rem; }
+.kpi-value { margin:.7rem 0 .25rem; color:#15233b; font:600 1.35rem 'DM Mono',monospace; }
+.kpi-foot { color:#8190a5; font-size:.68rem; line-height:1.45; }
+.section-label { display:flex; align-items:center; gap:.65rem; margin:.2rem 0 .85rem; color:#53647b; font:500 .68rem 'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; }
+.section-label::before { content:''; width:4px; height:17px; border-radius:5px; background:linear-gradient(180deg,var(--cyan),var(--blue)); }
+.section-label::after { content:''; height:1px; flex:1; background:linear-gradient(90deg,#d8e2ef,transparent); }
+.panel-caption { color:#8190a5; font-size:.75rem; margin:-.3rem 0 .85rem; line-height:1.5; }
+
+/* Inputs */
+[data-testid="stNumberInput"] label, [data-testid="stSelectbox"] label {
+  color:#52627a !important; font:700 .7rem 'Manrope',sans-serif !important; letter-spacing:.02em !important; margin-bottom:.35rem !important;
 }
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+[data-testid="stNumberInput"] input, [data-testid="stSelectbox"] [data-baseweb="select"] > div {
+  min-height:47px; background:#fff !important; border:1px solid #dce5f0 !important;
+  border-radius:11px !important; color:var(--ink) !important;
+  font:600 .9rem 'DM Mono',monospace !important; box-shadow:0 1px 2px rgba(15,23,42,.025);
+  transition:border-color .18s ease,box-shadow .18s ease;
 }
-
-/* ── Section label (eyebrow) ── */
-.section-label {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: #0369A1;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin: 0 0 12px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+[data-testid="stNumberInput"] input:focus, [data-testid="stSelectbox"] [data-baseweb="select"]:focus-within > div {
+  border-color:#60a5fa !important; box-shadow:0 0 0 3px rgba(37,99,235,.12) !important;
 }
+[data-testid="stNumberInput"] button { border:0 !important; color:#64748b !important; background:transparent !important; }
+[data-testid="stNumberInput"] button:hover { color:var(--blue) !important; }
 
-.section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, #E0DDD2, transparent);
-}
-
-/* ── Panel card ── */
-.panel-card {
-    background: #FFFFFF;
-    border: 1px solid #E0DDD2;
-    border-radius: 10px;
-    padding: 20px 22px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 6px rgba(31, 41, 55, 0.04);
-}
-
-/* ── Streamlit number inputs & selects ── */
-[data-testid="stNumberInput"] label,
-[data-testid="stSelectbox"] label {
-    font-family: 'Roboto Mono', monospace !important;
-    font-size: 0.72rem !important;
-    font-weight: 500 !important;
-    color: #6B7280 !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
-}
-
-[data-testid="stNumberInput"] input,
-[data-testid="stSelectbox"] > div > div {
-    background-color: #F7F5F0 !important;
-    border: 1px solid #E0DDD2 !important;
-    border-radius: 8px !important;
-    color: #1F2937 !important;
-    font-family: 'Roboto Mono', monospace !important;
-    font-size: 1rem !important;
-    font-weight: 500 !important;
-}
-
-[data-testid="stNumberInput"] input:focus,
-[data-testid="stSelectbox"] > div > div:focus-within {
-    border-color: #0369A1 !important;
-    box-shadow: 0 0 0 2px rgba(3, 105, 161, 0.15) !important;
-}
-
-/* ── Predict button ── */
+/* CTA */
 .stButton > button {
-    background: linear-gradient(135deg, #0369A1, #0EA5E9) !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    border-radius: 10px !important;
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: 0.04em !important;
-    padding: 14px 36px !important;
-    width: 100% !important;
-    transition: all 0.2s ease !important;
-    text-transform: uppercase !important;
-    cursor: pointer !important;
+  width:100%; min-height:54px; border:0 !important; border-radius:12px !important;
+  background:linear-gradient(100deg,#1d4ed8,#2563eb 60%,#0891b2) !important;
+  color:#fff !important; font:800 .82rem 'Manrope',sans-serif !important;
+  letter-spacing:.055em; text-transform:uppercase; box-shadow:0 8px 18px rgba(37,99,235,.2);
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
 }
+.stButton > button:hover { transform:translateY(-1px); filter:brightness(1.06); box-shadow:0 12px 24px rgba(37,99,235,.25); }
+.stButton > button:active { transform:translateY(0); }
 
-.stButton > button:hover {
-    background: linear-gradient(135deg, #0284C7, #38BDF8) !important;
-    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3) !important;
-    transform: translateY(-1px) !important;
+/* Output surfaces */
+.gauge-wrap { background:#fff; border:1px solid var(--line); border-radius:18px; padding:1.4rem 1.2rem .95rem; margin-top:.25rem; text-align:center; box-shadow:0 5px 18px rgba(15,23,42,.035); }
+.result-safe,.result-danger { display:flex; align-items:center; gap:.9rem; padding:1.05rem 1.15rem; margin-top:.5rem; border-radius:14px; font:700 .9rem 'Manrope',sans-serif; line-height:1.5; }
+.result-safe { color:#047857; background:#ecfdf5; border:1px solid #a7f3d0; }
+.result-danger { color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; }
+.result-label { margin-bottom:.25rem; color:#64748b; font:500 .64rem 'DM Mono',monospace; letter-spacing:.12em; text-transform:uppercase; }
+.stat-row { display:flex; gap:.7rem; margin-top:.9rem; }
+.stat-box { flex:1; min-width:0; padding:1rem .5rem; border:1px solid var(--line); border-radius:13px; background:#fff; box-shadow:0 3px 10px rgba(15,23,42,.025); text-align:center; }
+.stat-box .val { color:var(--ink); font:600 clamp(1rem,1.6vw,1.4rem) 'DM Mono',monospace; line-height:1.25; overflow-wrap:anywhere; }
+.stat-box .lbl { margin-top:.45rem; color:#64748b; font:500 .58rem 'DM Mono',monospace; letter-spacing:.05em; text-transform:uppercase; }
+.telemetry-readout { background:#f8fafc; border:1px solid #e2e9f2; border-radius:12px; padding:1rem 1.1rem; color:#65758b; font:500 .7rem/2 'DM Mono',monospace; }
+.telemetry-readout span { color:#1e293b; font-weight:600; }
+.footer-note { display:flex; justify-content:space-between; gap:1rem; margin-top:2rem; padding-top:1rem; border-top:1px solid #e0e8f2; color:#8492a6; font:400 .65rem 'DM Mono',monospace; }
+hr { border:0 !important; border-top:1px solid #dce5f0 !important; margin:1.5rem 0 !important; }
+[data-testid="stAlert"] { border-radius:12px !important; }
+@media(max-width:900px) {
+  .block-container { padding:1.2rem 1rem 2rem !important; }
+  .hmi-header { padding:1.2rem; gap:.8rem; }
+  .hmi-header .icon { width:50px; height:50px; flex-basis:50px; font-size:1.5rem; }
+  .hmi-header p { font-size:.56rem; }
+  .hmi-status { padding:.5rem .6rem; font-size:.57rem; }
+  .kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
-
-.stButton > button:active {
-    transform: translateY(0) !important;
+@media(max-width:600px) {
+  .hmi-header { flex-wrap:wrap; }
+  .hmi-status { margin-left:0; }
+  .dashboard-intro { align-items:flex-start; flex-direction:column; }
+  .stat-row { gap:.4rem; }
+  .stat-box { padding:.8rem .3rem; }
+  .stat-box .lbl { font-size:.5rem; }
+  .footer-note { flex-direction:column; gap:.35rem; }
 }
-
-/* ── Gauge container ── */
-.gauge-wrap {
-    background: #FFFFFF;
-    border: 1px solid #E0DDD2;
-    border-radius: 12px;
-    padding: 28px 24px 20px;
-    text-align: center;
-    margin-top: 4px;
-    box-shadow: 0 1px 8px rgba(31, 41, 55, 0.05);
-}
-
-/* ── Result cards ── */
-.result-safe {
-    background: rgba(4, 120, 87, 0.08);
-    border: 1px solid rgba(4, 120, 87, 0.35);
-    border-radius: 10px;
-    padding: 18px 22px;
-    margin-top: 16px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #047857;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.result-danger {
-    background: rgba(185, 28, 28, 0.08);
-    border: 1px solid rgba(185, 28, 28, 0.35);
-    border-radius: 10px;
-    padding: 18px 22px;
-    margin-top: 16px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #B91C1C;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.result-label {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.68rem;
-    color: #6B7280;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-}
-
-/* ── Stat mini card ── */
-.stat-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-}
-
-.stat-box {
-    flex: 1;
-    background: #F7F5F0;
-    border: 1px solid #E0DDD2;
-    border-radius: 8px;
-    padding: 12px 16px;
-    text-align: center;
-}
-
-.stat-box .val {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 1.45rem;
-    font-weight: 600;
-    color: #1F2937;
-    line-height: 1;
-}
-
-.stat-box .lbl {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.65rem;
-    color: #6B7280;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 5px;
-}
-
-/* ── Divider override ── */
-hr {
-    border-color: #E0DDD2 !important;
-    margin: 24px 0 !important;
-}
-
-/* ── Responsive column gap ── */
-[data-testid="column"] { padding: 0 8px !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -306,11 +159,44 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<div class="dashboard-intro">
+  <div>
+    <h2>Operations overview</h2>
+    <p>Review machine telemetry and estimate near-term failure risk before maintenance is required.</p>
+  </div>
+  <div class="live-chip">●&nbsp; PREDICTION CONSOLE</div>
+</div>
+<div class="kpi-strip">
+  <div class="kpi-card">
+    <div class="kpi-top">Analysis window <span class="kpi-icon">◷</span></div>
+    <div class="kpi-value">24 hours</div>
+    <div class="kpi-foot">Near-term failure forecast</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-top">Sensor channels <span class="kpi-icon">⌁</span></div>
+    <div class="kpi-value">04</div>
+    <div class="kpi-foot">Voltage, rotation, pressure, vibration</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-top">Asset profile <span class="kpi-icon">⚙</span></div>
+    <div class="kpi-value">08 inputs</div>
+    <div class="kpi-foot">Telemetry and machine history</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-top">Decision support <span class="kpi-icon">◈</span></div>
+    <div class="kpi-value">AI model</div>
+    <div class="kpi-foot">Risk estimate from your trained pipeline</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+
 
 col_left, col_right = st.columns([1, 1], gap="medium")
 
 with col_left:
-    st.markdown('<p class="section-label">Sensor Readings</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-label">Sensor Readings</p><p class="panel-caption">Enter the latest measured operating values from the target machine.</p>', unsafe_allow_html=True)
     with st.container():
         volt = st.number_input("Voltage (V)", min_value=0.0, value=170.0, step=0.1, format="%.1f")
         rotate = st.number_input("Rotation Speed (RPM)", min_value=0.0, value=450.0, step=1.0, format="%.1f")
@@ -318,7 +204,7 @@ with col_left:
         vibration = st.number_input("Vibration (mm/s)", min_value=0.0, value=40.0, step=0.1, format="%.2f")
 
 with col_right:
-    st.markdown('<p class="section-label">Machine Profile</p>', unsafe_allow_html=True)
+    st.markdown('<p class="section-label">Machine Profile</p><p class="panel-caption">Add asset age and recent fault / maintenance history.</p>', unsafe_allow_html=True)
     with st.container():
         model_type = st.selectbox("Machine Model", ["model1", "model2", "model3", "model4"])
         age = st.number_input("Machine Age (years)", min_value=0, value=10, step=1)
@@ -446,9 +332,7 @@ if predict_clicked:
         st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
         st.markdown('<p class="section-label">Input Telemetry</p>', unsafe_allow_html=True)
         st.markdown(f"""
-        <div style="font-family:'Roboto Mono',monospace; font-size:0.72rem;
-                    color:#6B7280; line-height:2; background:#F7F5F0;
-                    border:1px solid #E0DDD2; border-radius:8px; padding:12px 16px;">
+        <div class="telemetry-readout">
             VOLT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{volt:.1f} V</span><br>
             ROTATE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{rotate:.1f} RPM</span><br>
             PRESSURE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{pressure:.1f} PSI</span><br>
@@ -459,3 +343,10 @@ if predict_clicked:
             MAINT/30D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#374151">{maintenance_count_30d}</span>
         </div>
         """, unsafe_allow_html=True)
+
+st.markdown("""
+<div class="footer-note">
+  <span>PREDICTIVE MAINTENANCE · CONDITION MONITORING</span>
+  <span>Decision support only · Validate alerts against real operating conditions</span>
+</div>
+""", unsafe_allow_html=True)
